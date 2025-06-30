@@ -1,0 +1,5 @@
+- Primary Color: Vivid Red (#D7263D or similar)
+- Accent Colors: White and Light Gray for contrast and readability
+- Design Style: Minimalist, clean UI
+- Typography: Bold headings, easy-to-read sans-serif font (e.g., Poppins, Inter)
+
