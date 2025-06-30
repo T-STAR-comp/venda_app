@@ -564,7 +564,7 @@ const HomeComp = () => {
       {/* Post Ad Modal */}
       <PostAdModal open={showPostAd} onClose={() => setShowPostAd(false)} onSubmit={handlePostAd} />
 
-      {/* Footer */}
+      {/* Footer uni */}
       <Footer />
     </div>
   );
