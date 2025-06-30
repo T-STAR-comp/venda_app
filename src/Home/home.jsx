@@ -1,6 +1,10 @@
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles/home.module.css';
 import Footer from '../Footer/footer';
-import { useState } from 'react';
+import Login from '../Auth/Login';
+import Signup from '../Auth/signup';
+import UserOptionsModal from './components/userOptions';
+import PostAdModal from './components/postAd';
 
 const carImg = 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=600&q=80';
 const houseImg = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=400&q=80';
@@ -341,6 +345,10 @@ function ViewProducts({ category, onProductClick }) {
 const HomeComp = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [modalProduct, setModalProduct] = useState(null);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
+  const [showPostAd, setShowPostAd] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -395,6 +403,28 @@ const HomeComp = () => {
     return stars.join('');
   };
 
+  // Handler for options
+  const handleOption = (key) => {
+    setShowOptions(false);
+    if (key === 'logout') {
+      // TODO: Implement logout
+      alert('Logged out!');
+    } else if (key === 'changePassword') {
+      // TODO: Implement change password
+      alert('Change password clicked');
+    } else if (key === 'postAd') {
+      setShowPostAd(true);
+    } else if (key === 'viewAds') {
+      // TODO: Implement view my ads
+      alert('View my ads clicked');
+    }
+  };
+
+  const handlePostAd = (ad) => {
+    alert('Ad posted! (Demo)');
+    setShowPostAd(false);
+  };
+
   return (
     <div className={styles.main_div}>
       {/* Header */}
@@ -407,8 +437,10 @@ const HomeComp = () => {
             <a href="#" className={styles.navLink}>My ads</a>
           </nav>
           <div className={styles.headerActions}>
-            <button className={styles.loginBtn}>Log in</button>
-            <button className={styles.postAdBtn}>Post ad</button>
+            <button className={styles.postAdBtn} onClick={() => setShowOptions(true)}>Options</button>
+            <button className={styles.postAdBtn}>Logout</button>
+            <button className={styles.loginBtn} onClick={() => setShowLogin(true)}>Log in</button>
+            <button className={styles.postAdBtn} onClick={() => setShowPostAd(true)}>Post ad</button>
           </div>
         </div>
       </header>
@@ -448,7 +480,7 @@ const HomeComp = () => {
       {/* Product Grid */}
       <ViewProducts category={selectedCategory} onProductClick={handleProductClick} />
 
-      {/* Modal */}
+      {/* Product Modal */}
       {modalProduct && (
         <div className={styles.modalOverlay} onClick={() => setModalProduct(null)}>
           <div className={styles.bottomSheetModal} onClick={e => e.stopPropagation()}>
@@ -492,10 +524,59 @@ const HomeComp = () => {
         </div>
       )}
 
+      {/* Login Modal */}
+      {showLogin && (
+        <div className={styles.modalOverlay} onClick={() => setShowLogin(false)}>
+          <div className={styles.bottomSheetModal} onClick={e => e.stopPropagation()} style={{maxHeight: '90vh', overflowY: 'auto'}}>
+            <div className={styles.modalHandle}></div>
+            <div className={styles.modalCloseIcon} onClick={() => setShowLogin(false)}>
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 6L16 16M16 6L6 16" stroke="#D7263D" strokeWidth="2.2" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div className={styles.modalContent}>
+              <LoginModalContent onSignup={() => { setShowLogin(false); setShowSignup(true); }} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Signup Modal */}
+      {showSignup && (
+        <div className={styles.modalOverlay} onClick={() => setShowSignup(false)}>
+          <div className={styles.bottomSheetModal} onClick={e => e.stopPropagation()} style={{maxHeight: '90vh', overflowY: 'auto'}}>
+            <div className={styles.modalHandle}></div>
+            <div className={styles.modalCloseIcon} onClick={() => setShowSignup(false)}>
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 6L16 16M16 6L6 16" stroke="#D7263D" strokeWidth="2.2" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div className={styles.modalContent}>
+              <SignupModalContent onBack={() => setShowSignup(false)} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User Options Modal */}
+      <UserOptionsModal open={showOptions} onClose={() => setShowOptions(false)} onOption={handleOption} />
+
+      {/* Post Ad Modal */}
+      <PostAdModal open={showPostAd} onClose={() => setShowPostAd(false)} onSubmit={handlePostAd} />
+
       {/* Footer */}
       <Footer />
     </div>
   );
 };
+
+// Helper wrappers to inject the onSignup prop into Login
+function LoginModalContent({ onSignup }) {
+  return <Login onSignup={onSignup} />;
+}
+
+function SignupModalContent({ onBack }) {
+  return <Signup onBack={onBack} />;
+}
 
 export default HomeComp;

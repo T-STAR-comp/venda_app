@@ -1,0 +1,158 @@
+/* Post Ad Modal Glassy Styles */
+.postAdOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 30, 32, 0.32);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  z-index: 2100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.postAdModal {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(255,255,255,0.98);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 32px rgba(34,34,68,0.13);
+  padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+  position: relative;
+  animation: slideUpModal 0.35s cubic-bezier(0.4,0,0.2,1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.postAdCloseIcon {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245,245,247,0.85);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(30,30,32,0.08);
+  transition: background 0.18s;
+}
+.postAdCloseIcon:hover {
+  background: #ffe0e6;
+}
+
+.postAdTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #D7263D;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.postAdForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.postAdLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #434344;
+  margin-bottom: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.postAdInput {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1.5px solid #e5e5e7;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-family: inherit;
+  background: rgba(245,245,247,0.7);
+  margin-bottom: 0.2rem;
+  transition: border 0.2s, box-shadow 0.2s;
+  resize: none;
+}
+.postAdInput:focus {
+  border: 1.5px solid #D7263D;
+  outline: none;
+  box-shadow: 0 0 0 2px #ffe0e6;
+  background: #fff;
+}
+
+.postAdPreview {
+  width: 100%;
+  max-width: 220px;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 0.5rem auto 0.2rem auto;
+  display: block;
+  box-shadow: 0 2px 12px rgba(215,38,61,0.10);
+}
+
+.postAdBtn {
+  background: linear-gradient(90deg, #D7263D 60%, #b91c32 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 0;
+  font-weight: 700;
+  font-size: 1.08rem;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 2px 8px rgba(215,38,61,0.13);
+  outline: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.postAdBtn:hover, .postAdBtn:focus {
+  background: #b91c32;
+  transform: translateY(-2px) scale(1.03);
+}
+
+@media (max-width: 600px) {
+  .postAdModal {
+    max-width: 100vw;
+    border-radius: 18px 18px 0 0;
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+  }
+  .postAdTitle {
+    font-size: 1.05rem;
+  }
+  .postAdInput {
+    font-size: 0.98rem;
+    padding: 0.8rem 0.8rem;
+    border-radius: 9px;
+  }
+  .postAdBtn {
+    font-size: 0.98rem;
+    padding: 0.8rem 0;
+    border-radius: 10px;
+  }
+  .postAdPreview {
+    max-width: 100%;
+    max-height: 120px;
+    border-radius: 8px;
+  }
+}
