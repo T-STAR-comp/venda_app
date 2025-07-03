@@ -1,5 +1,6 @@
 import styles from './styles/signup.module.css'
 import { useState } from 'react';
+import Loader from '../components/loader';
 
 const Signup = ({ onBack }) => {
   const [name, setName] = useState('');
@@ -8,9 +9,11 @@ const Signup = ({ onBack }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+  const [loaderMessage, setLoaderMessage] = useState("Loading.......")
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     if (password !== confirmPassword) {
@@ -18,7 +21,38 @@ const Signup = ({ onBack }) => {
       return;
     }
     setLoading(true);
-    // TODO: Implement signup logic
+    try {
+        const response = await fetch(import.meta.env.VITE_SIGNUPUSER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                fullname: name, 
+                email: email, 
+                phonenumber: phone, 
+                password: confirmPassword
+                })
+        });
+        if (!response.ok) {
+            throw new Error('Failed to signup');
+        }
+        const data = await response.json();
+        //console.log(data);
+        if (data.status === 'ok') {
+            setLoaderMessage(data.message);
+            setShowLoader(true)
+            setTimeout(() => {
+                window.location.href = '/';                
+            }, 2000);
+        } else {
+            setError(data.error);
+        }
+        setLoading(false);
+    } catch (error) {
+        setError(error.message);
+    }
     setTimeout(() => {
       setLoading(false);
       // setError('Signup failed'); // Uncomment for demo error
@@ -27,6 +61,7 @@ const Signup = ({ onBack }) => {
 
   return (
     <div className={styles.signupBg}>
+        {showLoader && <Loader message={loaderMessage} onClose={() => setShowLoader(false)} />}
       <div className={styles.signupGlassCard} style={{maxHeight: '90vh', overflowY: 'auto', position: 'relative'}}>
         <div className={styles.signupHeader}>
           {/* Back to Home */}
@@ -40,7 +75,7 @@ const Signup = ({ onBack }) => {
           <span className={styles.logoVenda}>VENDA</span>
           <h2 className={styles.signupTitle}>Create your account</h2>
         </div>
-        <form className={styles.signupForm} onSubmit={handleSubmit}>
+        <div className={styles.signupForm} >
           <label className={styles.signupLabel} htmlFor="name">Full Name</label>
           <input
             className={styles.signupInput}
@@ -93,10 +128,10 @@ const Signup = ({ onBack }) => {
             required
           />
           {error && <div className={styles.signupError}>{error}</div>}
-          <button className={styles.signupBtn} type="submit" disabled={loading}>
+          <button className={styles.signupBtn} onClick={handleSubmit} disabled={loading}>
             {loading ? 'Signing up...' : 'Sign Up'}
           </button>
-        </form>
+        </div>
         <div className={styles.signupFooter}>
           <span className={styles.loginPrompt}>
             Already have an account?{' '}

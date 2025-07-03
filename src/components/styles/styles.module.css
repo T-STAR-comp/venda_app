@@ -53,6 +53,20 @@
   text-shadow: 0 1px 8px #fff, 0 1px 1px #ffe0e6;
 }
 
+.loaderClose {
+  background: #D7263D;
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1000;
+}
+
 @media (max-width: 600px) {
   .loaderSpinner {
     padding: 1.2rem 1.2rem;

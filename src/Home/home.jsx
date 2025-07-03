@@ -5,6 +5,11 @@ import Login from '../Auth/Login';
 import Signup from '../Auth/signup';
 import UserOptionsModal from './components/userOptions';
 import PostAdModal from './components/postAd';
+import Loader from '../components/loader';
+import { socketGetAds } from './functions/socketGetAds';
+import UserAds from './components/UserAds';
+import { filterAdsBySearch } from './functions/filterAdsBySearch';
+import ChangePassword from './components/ChangePassword';
 
 const carImg = 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=600&q=80';
 const houseImg = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=400&q=80';
@@ -48,296 +53,64 @@ const categories = [
   { name: 'Fashion' },
 ];
 
-const products = [
-  {
-    id: 1,
-    title: 'Sedan 2020',
-    price: 'MWK 15,000,000',
-    location: 'Lilongwe',
-    time: 'Today 12:30',
-    image: carImg,
-    featured: true,
-    category: 'Vehicles',
-    listerName: 'James Banda',
-    whatsapp: '+265991234567',
-    description: 'A well-maintained 2020 sedan with low mileage, full service history, and excellent fuel economy.',
-  },
-  {
-    id: 2,
-    title: '3 bedroom house',
-    price: 'MWK 80,000,000',
-    location: 'Blantyre',
-    time: 'Today 11:15',
-    image: houseImg,
-    featured: false,
-    category: 'Real Estate',
-    listerName: 'Mary Chirwa',
-    whatsapp: '+265888765432',
-    description: 'A spacious 3-bedroom house located in a quiet neighborhood.',
-  },
-  {
-    id: 3,
-    title: 'Laptop for sale',
-    price: 'MWK 250,000',
-    location: 'Mzuzu',
-    time: 'Today 03:00',
-    image: laptopImg,
-    featured: true,
-    category: 'Electronics',
-    listerName: 'Peter Mvula',
-    whatsapp: '+265997654321',
-    description: 'A high-performance laptop with a 16GB RAM and 512GB SSD.',
-  },
-  {
-    id: 4,
-    title: 'Sofa',
-    price: 'MWK 180,000',
-    location: 'Zomba',
-    time: 'Yesterday 15:45',
-    image: sofaImg,
-    featured: false,
-    category: 'Fashion',
-    listerName: 'Grace Phiri',
-    whatsapp: '+265881234567',
-    description: 'A comfortable sofa made from high-quality materials.',
-  },
-  {
-    id: 5,
-    title: 'Mountain Bike',
-    price: 'MWK 350,000',
-    location: 'Lilongwe',
-    time: 'Today 09:00',
-    image: 'https://images.unsplash.com/photo-1518655048521-f130df041f66?auto=format&fit=crop&w=400&q=80',
-    featured: true,
-    category: 'Sports & Outdoors',
-    listerName: 'John Mwale',
-    whatsapp: '+265991112233',
-    description: 'A rugged mountain bike suitable for off-road adventures.',
-  },
-  {
-    id: 6,
-    title: 'Office Space for Rent',
-    price: 'MWK 1,200,000/month',
-    location: 'Blantyre',
-    time: 'Today 10:30',
-    image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Commercial',
-    listerName: 'Linda Nkhoma',
-    whatsapp: '+265882223344',
-    description: 'A modern office space with a view of the city skyline.',
-  },
-  {
-    id: 7,
-    title: 'Designer Dress',
-    price: 'MWK 90,000',
-    location: 'Mzuzu',
-    time: 'Today 08:00',
-    image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80',
-    featured: true,
-    category: 'Fashion',
-    listerName: 'Agnes Chikondi',
-    whatsapp: '+265883334455',
-    description: 'A stunning designer dress for special occasions.',
-  },
-  {
-    id: 8,
-    title: 'Smart TV 55"',
-    price: 'MWK 700,000',
-    location: 'Lilongwe',
-    time: 'Yesterday 17:00',
-    image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Electronics',
-    listerName: 'Brian Chirwa',
-    whatsapp: '+265884445566',
-    description: 'A large 55" Smart TV with 4K resolution.',
-  },
-  {
-    id: 9,
-    title: 'Soccer Ball',
-    price: 'MWK 15,000',
-    location: 'Blantyre',
-    time: 'Today 13:00',
-    image: 'https://images.unsplash.com/photo-1505843279827-4b2b9c5c0c88?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Sports & Outdoors',
-    listerName: 'Samuel Banda',
-    whatsapp: '+265885556677',
-    description: 'A high-quality soccer ball for professional use.',
-  },
-  {
-    id: 10,
-    title: 'Warehouse for Sale',
-    price: 'MWK 45,000,000',
-    location: 'Lilongwe',
-    time: 'Yesterday 10:00',
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
-    featured: true,
-    category: 'Commercial',
-    listerName: 'Patricia Moyo',
-    whatsapp: '+265886667788',
-    description: 'A large warehouse with ample storage space.',
-  },
-  {
-    id: 11,
-    title: 'Convertible 2018',
-    price: 'MWK 22,000,000',
-    location: 'Blantyre',
-    time: 'Today 14:00',
-    image: 'https://images.unsplash.com/photo-1511391403515-1c1c5b6a1a9b?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Vehicles',
-    listerName: 'Victor Chisale',
-    whatsapp: '+265887778899',
-    description: 'A stylish 2018 convertible with a powerful engine.',
-  },
-  {
-    id: 12,
-    title: 'Luxury Apartment',
-    price: 'MWK 150,000/month',
-    location: 'Lilongwe',
-    time: 'Today 16:00',
-    image: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80',
-    featured: true,
-    category: 'Real Estate',
-    listerName: 'Emily Jere',
-    whatsapp: '+265888889900',
-    description: 'A luxurious apartment with stunning city views.',
-  },
-  {
-    id: 13,
-    title: 'Bluetooth Headphones',
-    price: 'MWK 60,000',
-    location: 'Zomba',
-    time: 'Yesterday 19:00',
-    image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Electronics',
-    listerName: 'Chikondi Phiri',
-    whatsapp: '+265889990011',
-    description: 'High-quality Bluetooth headphones with noise-cancellation.',
-  },
-  {
-    id: 14,
-    title: "Men's Suit",
-    price: 'MWK 120,000',
-    location: 'Mzuzu',
-    time: 'Today 09:30',
-    image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Fashion',
-    listerName: 'Kelvin Nyondo',
-    whatsapp: '+265880001122',
-    description: 'A tailored men\'s suit for formal occasions.',
-  },
-  {
-    id: 15,
-    title: 'Family House',
-    price: 'MWK 60,000,000',
-    location: 'Blantyre',
-    time: 'Today 10:45',
-    image: 'https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=400&q=80',
-    featured: true,
-    category: 'Real Estate',
-    listerName: 'Martha Chirwa',
-    whatsapp: '+265881122334',
-    description: 'A spacious family house with a large backyard.',
-  },
-  {
-    id: 16,
-    title: 'Used Pickup',
-    price: 'MWK 8,000,000',
-    location: 'Lilongwe',
-    time: 'Yesterday 12:00',
-    image: 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=600&q=80',
-    featured: false,
-    category: 'Vehicles',
-    listerName: 'Blessings Mbewe',
-    whatsapp: '+265882233445',
-    description: 'A used pickup truck with low mileage and good condition.',
-  },
-  {
-    id: 17,
-    title: 'Treadmill',
-    price: 'MWK 400,000',
-    location: 'Blantyre',
-    time: 'Today 07:30',
-    image: 'https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80',
-    featured: true,
-    category: 'Sports & Outdoors',
-    listerName: 'Hope Banda',
-    whatsapp: '+265883344556',
-    description: 'A high-quality treadmill for home use.',
-  },
-  {
-    id: 18,
-    title: 'Shop for Rent',
-    price: 'MWK 300,000/month',
-    location: 'Mzuzu',
-    time: 'Yesterday 16:00',
-    image: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Commercial',
-    listerName: 'Lilian Kumwenda',
-    whatsapp: '+265884455667',
-    description: 'A commercial shop for rent in a busy area.',
-  },
-  {
-    id: 19,
-    title: "Women's Handbag",
-    price: 'MWK 45,000',
-    location: 'Lilongwe',
-    time: 'Today 13:30',
-    image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80',
-    featured: true,
-    category: 'Fashion',
-    listerName: 'Ruth Manda',
-    whatsapp: '+265885566778',
-    description: 'A stylish women\'s handbag for everyday use.',
-  },
-  {
-    id: 20,
-    title: 'Gaming Console',
-    price: 'MWK 350,000',
-    location: 'Blantyre',
-    time: 'Today 15:00',
-    image: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
-    featured: false,
-    category: 'Electronics',
-    listerName: 'Patrick Chirwa',
-    whatsapp: '+265886677889',
-    description: 'A powerful gaming console for high-quality gaming.',
-  },
-];
+// Map backend ad to UI product format
+function mapBackendAdToProduct(ad) {
+  let imageUrl = '';
+  if (ad.image && ad.image.startsWith('/9j/')) {
+    imageUrl = `data:image/jpeg;base64,${ad.image}`;
+  } else if (ad.img_path) {
+    imageUrl = `/api/${ad.img_path.replace(/\\/g, '/')}`;
+  }
+  return {
+    id: ad.id,
+    title: ad.product_name,
+    price: `MWK ${Number(ad.price).toLocaleString()}`,
+    location: ad.location,
+    time: ad.created_at ? new Date(ad.created_at).toLocaleString() : '',
+    image: imageUrl,
+    featured: ad.featured === 1 || ad.featured === '1' || ad.featured === true,
+    category: ad.category,
+    listerName: ad.username,
+    whatsapp: ad.phone || '',
+    description: ad.description,
+    email: ad.email,
+  };
+}
 
-function ViewProducts({ category, onProductClick }) {
+function ViewProducts({ category, onProductClick, products }) {
   let filtered;
   if (!category) {
+    // Only show featured ads by default
     filtered = products.filter(p => p.featured);
   } else {
     filtered = products.filter(p => p.category === category);
   }
   return (
     <section className={styles.productGridSection}>
-      <div className={styles.productGrid}>
-        {filtered.map((prod) => (
-          <div className={styles.productCard} key={prod.id} onClick={() => onProductClick && onProductClick(prod)} style={{cursor:'pointer'}}>
-            <img src={prod.image} alt={prod.title} className={styles.productImgTall} />
-            <div className={styles.productInfo}>
-              <div className={styles.productTitle}>{prod.title}</div>
-              <div className={styles.productPrice}>{prod.price}</div>
-              <div className={styles.productMeta}>
-                <span className={styles.productLocation}>📍 {prod.location}</span>
-                <span className={styles.productTime}>{prod.time}</span>
+      {filtered.length === 0 ? (
+        <div style={{textAlign: 'center', color: '#888', padding: '2rem 0', fontSize: '1.1rem'}}>
+          No products found in this category.
+        </div>
+      ) : (
+        <div className={styles.productGrid}>
+          {filtered.map((prod) => (
+            <div className={styles.productCard} key={prod.id} onClick={() => onProductClick && onProductClick(prod)} style={{cursor:'pointer'}}>
+              <img src={prod.image} alt={prod.title} className={styles.productImgTall} />
+              <div className={styles.productInfo}>
+                <div className={styles.productTitle}>{prod.title}</div>
+                <div className={styles.productPrice}>{prod.price}</div>
+                <div className={styles.productMeta}>
+                  <span className={styles.productLocation}>📍 {prod.location}</span>
+                  <span className={styles.productTime}>{prod.time}</span>
+                </div>
+                {prod.featured && (
+                  <span style={{color:'#D7263D',fontWeight:600,fontSize:'0.9rem',marginTop:'0.3rem'}}>★ Featured</span>
+                )}
               </div>
-              {prod.featured && (
-                <span style={{color:'#D7263D',fontWeight:600,fontSize:'0.9rem',marginTop:'0.3rem'}}>★ Featured</span>
-              )}
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -349,11 +122,47 @@ const HomeComp = () => {
   const [showSignup, setShowSignup] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const [showPostAd, setShowPostAd] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+  const [loaderMessage, setLoaderMessage] = useState('Loading...');
+  const [ads, setAds] = useState([]);
+  const [welcomeMsg, setWelcomeMsg] = useState('');
+  const [showUserAds, setShowUserAds] = useState(false);
+  const [userAds, setuserAds] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState(null); // null = no search, [] = no results
+  const [showChangePassword, setShowChangePassword] = useState(false);
+
+  useEffect(() => {
+    const ws = socketGetAds((data) => {
+      if (data && Array.isArray(data.ads)) {
+
+        const mapped = data.ads.map(mapBackendAdToProduct);
+        setAds(mapped);
+        setuserAds(data.ads);
+        console.log('Mapped products:', mapped);
+      }
+    });
+    return () => ws.close();
+  }, []);
+
+  useEffect(() => {
+    // Show welcome message if user exists
+    const user = sessionStorage.getItem('user');
+    if (user) {
+      setWelcomeMsg(`Hi ${user} welcome to Venda`);
+      const timer = setTimeout(() => setWelcomeMsg(''), 60000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // TODO: Implement search functionality
-    console.log('Search submitted');
+    if (!searchTerm.trim()) {
+      setSearchResults(null);
+      return;
+    }
+    const results = filterAdsBySearch(ads, searchTerm.trim());
+    setSearchResults(results);
   };
 
   const handleCategoryClick = (category) => {
@@ -407,16 +216,16 @@ const HomeComp = () => {
   const handleOption = (key) => {
     setShowOptions(false);
     if (key === 'logout') {
-      // TODO: Implement logout
-      alert('Logged out!');
+      setShowLoader(true);
+      sessionStorage.removeItem('Login_token');
+      setShowLoader(false);
+      window.location.href = '/';
     } else if (key === 'changePassword') {
-      // TODO: Implement change password
-      alert('Change password clicked');
+      setShowChangePassword(true);
     } else if (key === 'postAd') {
       setShowPostAd(true);
     } else if (key === 'viewAds') {
-      // TODO: Implement view my ads
-      alert('View my ads clicked');
+      setShowUserAds(true);
     }
   };
 
@@ -425,8 +234,41 @@ const HomeComp = () => {
     setShowPostAd(false);
   };
 
+  const HandleOutOdsessionPosts = () => {
+    setShowLoader(true);
+    setLoaderMessage("You Must Login First");
+    setTimeout(() => {
+      setShowLoader(false);
+      setShowLogin(true);
+    }, 2000);
+  };
+
+  const handleLogout = () => {
+    setShowLoader(true);
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('Login_token');
+    sessionStorage.removeItem('user_email');
+    setShowLoader(false);
+    window.location.href = '/';
+  };
+
   return (
     <div className={styles.main_div}>
+      {welcomeMsg && (
+        <div style={{
+          background: '#D7263D',
+          color: '#fff',
+          padding: '1rem',
+          textAlign: 'center',
+          fontWeight: 600,
+          fontSize: '1.1rem',
+          letterSpacing: '0.5px',
+          zIndex: 1000,
+        }}>
+          {welcomeMsg}
+        </div>
+      )}
+      {showLoader && <Loader message={loaderMessage} onClose={() => setShowLoader(false)} />}
       {/* Header */}
       <header className={styles.headerBar}>
         <div className={styles.headerContent}>
@@ -437,18 +279,26 @@ const HomeComp = () => {
             <a href="#" className={styles.navLink}>My ads</a>
           </nav>
           <div className={styles.headerActions}>
-            <button className={styles.postAdBtn} onClick={() => setShowOptions(true)}>Options</button>
-            <button className={styles.postAdBtn}>Logout</button>
-            <button className={styles.loginBtn} onClick={() => setShowLogin(true)}>Log in</button>
-            <button className={styles.postAdBtn} onClick={() => setShowPostAd(true)}>Post ad</button>
+            {sessionStorage.getItem('Login_token') ? (
+              <>
+                <button className={styles.postAdBtn} onClick={() => setShowOptions(true)}>Options</button>
+                <button className={styles.postAdBtn} onClick={handleLogout}>Logout</button>
+              </>
+            ) : (
+              <>
+                <button className={styles.postAdBtn} onClick={() => setShowLogin(true)}>Log in</button>
+                <button className={styles.postAdBtn} onClick={() => HandleOutOdsessionPosts()}>Options</button>
+                <button className={styles.postAdBtn} onClick={() => HandleOutOdsessionPosts()}>Post ad</button>
+              </>
+            )}
           </div>
         </div>
       </header>
 
       {/* Search Bar */}
       <section className={styles.searchSection}>
-        <form className={styles.searchForm}>
-          <input className={styles.searchInput} placeholder="What are you looking for?" />
+        <form className={styles.searchForm} onSubmit={handleSearch}>
+          <input className={styles.searchInput} placeholder="What are you looking for?" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           <select className={styles.categoryDropdown}>
             <option>All categories</option>
             {categories.map((cat) => (
@@ -478,7 +328,7 @@ const HomeComp = () => {
       </section>
 
       {/* Product Grid */}
-      <ViewProducts category={selectedCategory} onProductClick={handleProductClick} />
+      <ViewProducts category={selectedCategory} onProductClick={handleProductClick} products={searchResults !== null ? searchResults : ads} />
 
       {/* Product Modal */}
       {modalProduct && (
@@ -563,6 +413,12 @@ const HomeComp = () => {
 
       {/* Post Ad Modal */}
       <PostAdModal open={showPostAd} onClose={() => setShowPostAd(false)} onSubmit={handlePostAd} />
+
+      {/* User Ads Modal */}
+      <UserAds open={showUserAds} onClose={() => setShowUserAds(false)} ads={userAds} userEmail={sessionStorage.getItem('user_email')} />
+
+      {/* Change Password Modal */}
+      <ChangePassword open={showChangePassword} onClose={() => setShowChangePassword(false)} />
 
       {/* Footer  */}
       <Footer />

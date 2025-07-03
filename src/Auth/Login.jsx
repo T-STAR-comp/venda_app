@@ -7,11 +7,37 @@ const Login = ({ onSignup }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     // TODO: Implement login logic
+    try {
+        const response = await fetch(import.meta.env.VITE_LOGINUSER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+     
+        if (!response.ok) {
+            throw new Error('Failed to login');
+        }
+        const data = await response.json();
+        console.log(data);
+        if (data.status === 'ok') {
+            sessionStorage.setItem('Login_token', data.token);
+            sessionStorage.setItem('user', data.user);
+            sessionStorage.setItem('user_email', data.email);
+            window.location.href = '/';
+        } else {
+            setError(data.error);
+        }
+        setLoading(false);
+    } catch (error) {
+        setError(error.message);
+    }
     setTimeout(() => {
       setLoading(false);
       // setError('Invalid credentials'); // Uncomment for demo error
@@ -25,7 +51,7 @@ const Login = ({ onSignup }) => {
           <span className={styles.logoVenda}>VENDA</span>
           <h2 className={styles.loginTitle}>Sign in to your account</h2>
         </div>
-        <form className={styles.loginForm} onSubmit={handleSubmit}>
+        <div className={styles.loginForm} >
           <label className={styles.loginLabel} htmlFor="email">Email</label>
           <input
             className={styles.loginInput}
@@ -48,10 +74,10 @@ const Login = ({ onSignup }) => {
             required
           />
           {error && <div className={styles.loginError}>{error}</div>}
-          <button className={styles.loginBtn} type="submit" disabled={loading}>
+          <button className={styles.loginBtn} type="submit" disabled={loading} onClick={handleSubmit}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
-        </form>
+        </div>
         <div className={styles.loginFooter}>
           <a href="#" className={styles.forgotLink}>Forgot password?</a>
           <span className={styles.signupPrompt}>
